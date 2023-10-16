@@ -1,0 +1,247 @@
+
+    #include "cfg.as"
+    #include "msglib.as"
+
+    #include "hspmath.as"
+
+    #enum x = 0
+    #enum y
+
+    #define racket 100
+    #define racketspan 20
+    #define rackettickness 20
+    #define ballsize 10
+
+    #define movespeed 4
+
+    my_pos = 0
+    enemy_pos = 0
+
+    ball_pos.x = 100
+    ball_pos.y = 100
+    ball_vector = 2
+
+    ball_speed = 2
+
+    nowkey = 0
+
+    repeat -1
+
+        // キー入力
+
+        getkey nowkey, 38
+        if ( nowkey ) {
+
+            if ( my_pos > 0 ) : my_pos -= movespeed
+            
+        }
+
+        getkey nowkey, 40
+        if ( nowkey ) {
+
+            if ( my_pos < 480 - racket ) : my_pos += movespeed
+            
+        }
+
+        // AI
+
+        gosub *l_enemyai
+
+        // ボール移動
+
+        switch ball_vector
+
+        case 1
+
+            ball_pos.x += ball_speed
+            ball_pos.y -= ball_speed
+
+        swbreak
+
+        case 2
+
+            ball_pos.x -= ball_speed
+            ball_pos.y -= ball_speed
+
+        swbreak
+
+        case 3
+
+            ball_pos.x -= ball_speed
+            ball_pos.y += ball_speed
+
+        swbreak
+
+        case 4
+
+            ball_pos.x += ball_speed
+            ball_pos.y += ball_speed
+
+        swbreak
+
+        swend
+
+        // 自分ラケット衝突判定
+
+        if ( ball_pos.x <= racketspan + rackettickness ) {
+
+            if ( ( ball_pos.y >= my_pos ) and ( ball_pos.y <= ( my_pos + racket ) ) ) {
+
+                switch ball_vector
+
+                    case 1
+
+                        ball_vector = 2
+
+                    swbreak
+
+                    case 2
+
+                        ball_vector = 1
+
+                    swbreak
+
+                    case 3
+
+                        ball_vector = 4
+
+                    swbreak
+
+                    case 4
+
+                        ball_vector = 3
+
+                    swbreak
+                
+                swend
+
+            }
+
+        }
+
+        if ( ball_pos.x >= 640 - racketspan - rackettickness ) {
+
+            if ( ( ball_pos.y >= enemy_pos ) and ( ball_pos.y <= ( enemy_pos + racket ) ) ) {
+
+                switch ball_vector
+
+                    case 1
+
+                        ball_vector = 2
+
+                    swbreak
+
+                    case 2
+
+                        ball_vector = 1
+
+                    swbreak
+
+                    case 3
+
+                        ball_vector = 4
+
+                    swbreak
+
+                    case 4
+
+                        ball_vector = 3
+
+                    swbreak
+                
+                swend
+
+            }
+
+        }
+
+        if ( ( ball_pos.y - ballsize <= 0 ) or ( ball_pos.y + ballsize > 480 ) ) {
+
+            switch ball_vector
+
+                case 1
+
+                    ball_vector = 4
+
+                swbreak
+
+                case 2
+
+                    ball_vector = 3
+
+                swbreak
+
+                case 3
+
+                    ball_vector = 2
+
+                swbreak
+
+                case 4
+
+                    ball_vector = 1
+
+                swbreak
+            
+            swend
+
+        }
+
+        redraw 0
+
+            color 255, 255, 255
+            boxf
+
+            color 0, 0, 0
+            boxf racketspan, my_pos, racketspan + rackettickness, my_pos + racket
+
+            color 0, 0, 0
+            boxf 640 - racketspan, enemy_pos, 640 - racketspan - rackettickness, enemy_pos + racket
+
+            circle ball_pos.x -ballsize, ball_pos.y -ballsize, ball_pos.x +ballsize, ball_pos.y +ballsize
+
+            color
+            pos 0, 300
+            mes "General"
+            mes " Ball Vector: "+ ball_vector
+            mes " My racket pos: "+ my_pos
+            mes " Enemy racket pos: "+ enemy_pos
+            mes "AI"
+            mes " Racket-Ball distance: "+ racket_ball_distance
+            mes " Reached pos(+) : "+ ( ball_pos.y + racket_ball_distance )
+            mes " Reached pos(-) : "+ ( ball_pos.y - racket_ball_distance )
+            
+
+        redraw 1
+
+        wait 1
+
+    loop
+
+    stop
+
+*l_enemyai
+
+    racket_ball_distance = 640 - racketspan - rackettickness - ball_pos.x 
+
+    if ( ball_vector == 1 ) {
+
+        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos ) or ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket ) ) {
+            
+            if ( enemy_pos > 0 ) : enemy_pos -= movespeed
+
+        } 
+
+    }
+
+    if ( ball_vector == 4 ) {
+
+        if ( ( ( ball_pos.y + racket_ball_distance ) <= enemy_pos ) or ( ( ball_pos.y + racket_ball_distance ) >= enemy_pos + racket ) ) {
+            
+            if ( enemy_pos <= 480 - racket ) : enemy_pos += movespeed
+
+        }
+
+    }
+
+    return
