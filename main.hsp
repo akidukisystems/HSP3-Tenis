@@ -8,11 +8,11 @@
     #enum y
 
     #define racket 100
-    #define racketspan 20
-    #define rackettickness 20
+    #define racketspace 20
+    #define racketthickness 20
     #define ballsize 10
 
-    #define movespeed 4
+    #define movespeed 2
 
     my_pos = 0
     enemy_pos = 0
@@ -21,9 +21,11 @@
     ball_pos.y = 100
     ball_vector = 2
 
-    ball_speed = 2
+    ball_speed = 1
 
     nowkey = 0
+
+    font "", 12
 
     repeat -1
 
@@ -83,7 +85,7 @@
 
         // 自分ラケット衝突判定
 
-        if ( ball_pos.x <= racketspan + rackettickness ) {
+        if ( ball_pos.x <= racketspace + racketthickness ) {
 
             if ( ( ball_pos.y >= my_pos ) and ( ball_pos.y <= ( my_pos + racket ) ) ) {
 
@@ -119,7 +121,9 @@
 
         }
 
-        if ( ball_pos.x >= 640 - racketspan - rackettickness ) {
+        // 敵ラケット衝突判定
+
+        if ( ball_pos.x >= 640 - racketspace - racketthickness ) {
 
             if ( ( ball_pos.y >= enemy_pos ) and ( ball_pos.y <= ( enemy_pos + racket ) ) ) {
 
@@ -155,6 +159,8 @@
 
         }
 
+        // 上下壁判定
+
         if ( ( ball_pos.y - ballsize <= 0 ) or ( ball_pos.y + ballsize > 480 ) ) {
 
             switch ball_vector
@@ -187,16 +193,18 @@
 
         }
 
+        // 描画
+
         redraw 0
 
             color 255, 255, 255
             boxf
 
             color 0, 0, 0
-            boxf racketspan, my_pos, racketspan + rackettickness, my_pos + racket
+            boxf racketspace, my_pos, racketspace + racketthickness, my_pos + racket
 
             color 0, 0, 0
-            boxf 640 - racketspan, enemy_pos, 640 - racketspan - rackettickness, enemy_pos + racket
+            boxf 640 - racketspace, enemy_pos, 640 - racketspace - racketthickness, enemy_pos + racket
 
             circle ball_pos.x -ballsize, ball_pos.y -ballsize, ball_pos.x +ballsize, ball_pos.y +ballsize
 
@@ -204,17 +212,23 @@
             pos 0, 300
             mes "General"
             mes " Ball Vector: "+ ball_vector
-            mes " My racket pos: "+ my_pos
-            mes " Enemy racket pos: "+ enemy_pos
+            mes " My racket-pos: "+ my_pos
+            mes " Enemy racket-pos: "+ enemy_pos
             mes "AI"
             mes " Racket-Ball distance: "+ racket_ball_distance
-            mes " Reached pos(+) : "+ ( ball_pos.y + racket_ball_distance )
-            mes " Reached pos(-) : "+ ( ball_pos.y - racket_ball_distance )
+            mes " Reached-pos(+) : "+ ( ball_pos.y + racket_ball_distance )
+            mes " Reached-pos(-) : "+ ( ball_pos.y - racket_ball_distance )
+            mes "const"
+            mes " racket-size: "+ racket
+            mes " racket-space: "+ racketspace
+            mes " racket-thickness: "+ racketthickness
+            mes " racket-speed: "+ movespeed
+            mes " ball-speed: "+ ball_speed
             
 
         redraw 1
 
-        wait 1
+        await 5
 
     loop
 
@@ -222,11 +236,11 @@
 
 *l_enemyai
 
-    racket_ball_distance = 640 - racketspan - rackettickness - ball_pos.x 
+    racket_ball_distance = 640 - racketspace - racketthickness - ball_pos.x 
 
     if ( ball_vector == 1 ) {
 
-        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos ) or ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket ) ) {
+        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos + racket * 2/5 ) or ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
             
             if ( enemy_pos > 0 ) : enemy_pos -= movespeed
 
@@ -236,7 +250,7 @@
 
     if ( ball_vector == 4 ) {
 
-        if ( ( ( ball_pos.y + racket_ball_distance ) <= enemy_pos ) or ( ( ball_pos.y + racket_ball_distance ) >= enemy_pos + racket ) ) {
+        if ( ( ( ball_pos.y + racket_ball_distance ) != enemy_pos + racket * 2/5 ) or ( ( ball_pos.y + racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
             
             if ( enemy_pos <= 480 - racket ) : enemy_pos += movespeed
 
