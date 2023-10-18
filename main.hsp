@@ -17,11 +17,11 @@
     my_pos = 0
     enemy_pos = 0
 
-    ball_pos.x = 100
-    ball_pos.y = 100
+    ball_pos.x = 100.0
+    ball_pos.y = 100.0
     ball_vector = 2
 
-    ball_speed = 1
+    ball_speed = 1.0
 
     nowkey = 0
 
@@ -123,9 +123,11 @@
 
         // 敵ラケット衝突判定
 
-        if ( ball_pos.x >= 640 - racketspace - racketthickness ) {
+        if ( int( ball_pos.x ) >= 640 - racketspace - racketthickness ) {
 
-            if ( ( ball_pos.y >= enemy_pos ) and ( ball_pos.y <= ( enemy_pos + racket ) ) ) {
+            if ( ( int( ball_pos.y)  >= enemy_pos ) and ( int( ball_pos.y ) <= ( enemy_pos + racket ) ) ) {
+
+                ball_speed += 0.1
 
                 switch ball_vector
 
@@ -159,9 +161,27 @@
 
         }
 
+        // 自分壁当たり判定
+
+        if ( int( ball_pos.x ) <= ballsize ) {
+
+            dialog "omg"
+            stop
+
+        }
+
+        // 敵壁当たり判定
+
+        if ( int( ball_pos.x ) >= 640 - ballsize ) {
+
+            dialog "lucky"
+            stop
+
+        }
+
         // 上下壁判定
 
-        if ( ( ball_pos.y - ballsize <= 0 ) or ( ball_pos.y + ballsize > 480 ) ) {
+        if ( ( int( ball_pos.y ) - ballsize <= 0 ) or ( int( ball_pos.y ) + ballsize > 480 ) ) {
 
             switch ball_vector
 
@@ -206,7 +226,7 @@
             color 0, 0, 0
             boxf 640 - racketspace, enemy_pos, 640 - racketspace - racketthickness, enemy_pos + racket
 
-            circle ball_pos.x -ballsize, ball_pos.y -ballsize, ball_pos.x +ballsize, ball_pos.y +ballsize
+            circle int( ball_pos.x ) -ballsize, int( ball_pos.y ) -ballsize, int( ball_pos.x ) +ballsize, int( ball_pos.y ) +ballsize
 
             color
             pos 0, 300
@@ -236,11 +256,11 @@
 
 *l_enemyai
 
-    racket_ball_distance = 640 - racketspace - racketthickness - ball_pos.x 
+    racket_ball_distance = 640 - racketspace - racketthickness - int( ball_pos.x )
 
     if ( ball_vector == 1 ) {
 
-        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos + racket * 2/5 ) or ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
+        if ( ( ( int( ball_pos.y ) - racket_ball_distance ) <= enemy_pos + racket * 2/5 ) or ( ( int( ball_pos.y ) - racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
             
             if ( enemy_pos > 0 ) : enemy_pos -= movespeed
 
@@ -250,7 +270,7 @@
 
     if ( ball_vector == 4 ) {
 
-        if ( ( ( ball_pos.y + racket_ball_distance ) != enemy_pos + racket * 2/5 ) or ( ( ball_pos.y + racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
+        if ( ( ( int( ball_pos.y ) + racket_ball_distance ) != enemy_pos + racket * 2/5 ) or ( ( int( ball_pos.y ) + racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
             
             if ( enemy_pos <= 480 - racket ) : enemy_pos += movespeed
 
