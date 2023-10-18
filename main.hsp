@@ -23,13 +23,16 @@
 
     ball_speed = 1.0
 
+    score = 0
+    name = "PLAYER"
+
     nowkey = 0
 
     font "", 12
 
     repeat -1
 
-        // ã‚­ãƒ¼å…¥åŠ›
+        // ƒL[“ü—Í
 
         getkey nowkey, 38
         if ( nowkey ) {
@@ -49,7 +52,7 @@
 
         gosub *l_enemyai
 
-        // ãƒœãƒ¼ãƒ«ç§»å‹•
+        // ƒ{[ƒ‹ˆÚ“®
 
         switch ball_vector
 
@@ -83,11 +86,13 @@
 
         swend
 
-        // è‡ªåˆ†ãƒ©ã‚±ãƒƒãƒˆè¡çªåˆ¤å®š
+        // ©•ªƒ‰ƒPƒbƒgÕ“Ë”»’è
 
         if ( ball_pos.x <= racketspace + racketthickness ) {
 
             if ( ( ball_pos.y >= my_pos ) and ( ball_pos.y <= ( my_pos + racket ) ) ) {
+
+                score ++
 
                 switch ball_vector
 
@@ -121,7 +126,7 @@
 
         }
 
-        // æ•µãƒ©ã‚±ãƒƒãƒˆè¡çªåˆ¤å®š
+        // “Gƒ‰ƒPƒbƒgÕ“Ë”»’è
 
         if ( int( ball_pos.x ) >= 640 - racketspace - racketthickness ) {
 
@@ -161,25 +166,52 @@
 
         }
 
-        // è‡ªåˆ†å£å½“ãŸã‚Šåˆ¤å®š
+        // ©•ª•Ç“–‚½‚è”»’è
 
         if ( int( ball_pos.x ) <= ballsize ) {
 
-            dialog "omg"
+            font "", 48
+            
+            color : pos 192, 52
+            mes "GAME OVER"
+
+            color 192, 0, 0 : pos 190, 50
+            mes "GAME OVER"
+
+            redraw 1
+
             stop
 
         }
 
-        // æ•µå£å½“ãŸã‚Šåˆ¤å®š
+        // “G•Ç“–‚½‚è”»’è
 
         if ( int( ball_pos.x ) >= 640 - ballsize ) {
 
-            dialog "lucky"
+            font "", 48
+                
+            color : pos 192, 52
+            mes "GAME OVER"
+
+            color 192, 0, 0 : pos 190, 50
+            mes "GAME OVER"
+
+            wait 300
+
+            color : pos 462, 52
+            mes "...?"
+
+            color 192, 0, 0 : pos 460, 50
+            mes "...?"
+
+
+            redraw 1
+
             stop
 
         }
 
-        // ä¸Šä¸‹å£åˆ¤å®š
+        // ã‰º•Ç”»’è
 
         if ( ( int( ball_pos.y ) - ballsize <= 0 ) or ( int( ball_pos.y ) + ballsize > 480 ) ) {
 
@@ -213,7 +245,7 @@
 
         }
 
-        // æç”»
+        // •`‰æ
 
         redraw 0
 
@@ -229,7 +261,9 @@
             circle int( ball_pos.x ) -ballsize, int( ball_pos.y ) -ballsize, int( ball_pos.x ) +ballsize, int( ball_pos.y ) +ballsize
 
             color
-            pos 0, 300
+            pos 0, 270
+            mes " name : "+ name
+            mes " score: "+ score
             mes "General"
             mes " Ball Vector: "+ ball_vector
             mes " My racket-pos: "+ my_pos
@@ -244,7 +278,7 @@
             mes " racket-thickness: "+ racketthickness
             mes " racket-speed: "+ movespeed
             mes " ball-speed: "+ ball_speed
-            
+        
 
         redraw 1
 
@@ -260,7 +294,7 @@
 
     if ( ball_vector == 1 ) {
 
-        if ( ( ( int( ball_pos.y ) - racket_ball_distance ) <= enemy_pos + racket * 2/5 ) or ( ( int( ball_pos.y ) - racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
+        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos + racket * 1/5 ) and ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket * 4/5 ) ) {
             
             if ( enemy_pos > 0 ) : enemy_pos -= movespeed
 
@@ -270,7 +304,7 @@
 
     if ( ball_vector == 4 ) {
 
-        if ( ( ( int( ball_pos.y ) + racket_ball_distance ) != enemy_pos + racket * 2/5 ) or ( ( int( ball_pos.y ) + racket_ball_distance ) >= enemy_pos + racket * 3/5 ) ) {
+        if ( ( ( ball_pos.y + racket_ball_distance ) != enemy_pos + racket * 1/5 ) and ( ( ball_pos.y + racket_ball_distance ) >= enemy_pos + racket * 4/5 ) ) {
             
             if ( enemy_pos <= 480 - racket ) : enemy_pos += movespeed
 
