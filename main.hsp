@@ -294,7 +294,7 @@
 
     if ( ball_vector == 1 ) {
 
-        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos + racket * 1/5 ) and ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket * 4/5 ) ) {
+        if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos + racket * 1/5 ) or ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket * 4/5 ) ) {
             
             if ( enemy_pos > 0 ) : enemy_pos -= movespeed
 
