@@ -1,6 +1,7 @@
 
     #include "cfg.as"
     #include "msglib.as"
+    #include "bool.as"
 
     #include "hspmath.as"
 
@@ -10,38 +11,43 @@
     #define racket 100
     #define racketspace 20
     #define racketthickness 20
-    #define ballsize 10
+    #define ballsize 12
 
     #define movespeed 2
 
     my_pos = 0
     enemy_pos = 0
 
-    ball_pos.x = 100.0
-    ball_pos.y = 100.0
+    ball_pos.x = 200.0
+    ball_pos.y = 200.0
     ball_vector = 2
 
     ball_speed = 1.0
+    ball_acceleration = 0.08
+
+    isAiEnable = false
+
+    isLockedScore = false
+
+    nowkey = 0
 
     score = 0
     name = "PLAYER"
 
-    nowkey = 0
-
-    font "", 12
+    font "MS Gothic", 12
 
     repeat -1
 
         // キー入力
 
-        getkey nowkey, 38
+        getkey nowkey, 38   ; 上矢印
         if ( nowkey ) {
 
             if ( my_pos > 0 ) : my_pos -= movespeed
             
         }
 
-        getkey nowkey, 40
+        getkey nowkey, 40   ; 下矢印
         if ( nowkey ) {
 
             if ( my_pos < 480 - racket ) : my_pos += movespeed
@@ -52,32 +58,42 @@
 
         gosub *l_enemyai
 
+        if ( stat ) {
+            
+            isAiEnable = false
+
+        } else {
+
+            isAiEnable = true
+
+        }
+
         // ボール移動
 
         switch ball_vector
 
-        case 1
+        case 1  ; 右上
 
             ball_pos.x += ball_speed
             ball_pos.y -= ball_speed
 
         swbreak
 
-        case 2
+        case 2 ; 左上
 
             ball_pos.x -= ball_speed
             ball_pos.y -= ball_speed
 
         swbreak
 
-        case 3
+        case 3  ; 左下
 
             ball_pos.x -= ball_speed
             ball_pos.y += ball_speed
 
         swbreak
 
-        case 4
+        case 4  ; 右下
 
             ball_pos.x += ball_speed
             ball_pos.y += ball_speed
@@ -88,12 +104,20 @@
 
         // 自分ラケット衝突判定
 
-        if ( ball_pos.x <= racketspace + racketthickness ) {
+        if ( ball_pos.x <= racketspace + racketthickness ) {    ; ボールはラケットの移動軸上にあるか
 
-            if ( ( ball_pos.y >= my_pos ) and ( ball_pos.y <= ( my_pos + racket ) ) ) {
+            if ( ( ball_pos.y >= my_pos ) and ( ball_pos.y <= ( my_pos + racket ) ) ) { ; ボールはラケットの範囲内にあるか
 
-                score ++
+                if ( isLockedScore == false ) { ; スコア変更がロックされていないか
+                    
+                    score += 100
+                    isLockedScore = true
 
+                }
+
+                score += abs( abs( int( ball_pos.y ) - my_pos - racket / 2 ) - 50 ) ; ラケット中央に近い分だけスコア加算
+
+                // ボール跳ね返す
                 switch ball_vector
 
                     case 1
@@ -132,8 +156,10 @@
 
             if ( ( int( ball_pos.y)  >= enemy_pos ) and ( int( ball_pos.y ) <= ( enemy_pos + racket ) ) ) {
 
-                ball_speed += 0.1
+                ball_speed += ball_acceleration     ; ボール加速
+                isLockedScore = false               ; スコアロック解除
 
+                // ボール跳ね返す
                 switch ball_vector
 
                     case 1
@@ -215,6 +241,7 @@
 
         if ( ( int( ball_pos.y ) - ballsize <= 0 ) or ( int( ball_pos.y ) + ballsize > 480 ) ) {
 
+            ; 跳ね返す
             switch ball_vector
 
                 case 1
@@ -262,22 +289,19 @@
 
             color
             pos 0, 270
-            mes " name : "+ name
-            mes " score: "+ score
+            mes " name  : "+ name
+            mes " score : "+ score
             mes "General"
-            mes " Ball Vector: "+ ball_vector
-            mes " My racket-pos: "+ my_pos
-            mes " Enemy racket-pos: "+ enemy_pos
+            mes " Ball Vector      : "+ ball_vector
+            mes " My racket-pos    : "+ my_pos
+            mes " Enemy racket-pos : "+ enemy_pos
+            mes " isLockedScore    : "+ typebool( isLockedScore )
+            mes " ball-speed       : "+ ball_speed
             mes "AI"
-            mes " Racket-Ball distance: "+ racket_ball_distance
-            mes " Reached-pos(+) : "+ ( ball_pos.y + racket_ball_distance )
-            mes " Reached-pos(-) : "+ ( ball_pos.y - racket_ball_distance )
-            mes "const"
-            mes " racket-size: "+ racket
-            mes " racket-space: "+ racketspace
-            mes " racket-thickness: "+ racketthickness
-            mes " racket-speed: "+ movespeed
-            mes " ball-speed: "+ ball_speed
+            mes " isEnable             : "+ typebool( isAiEnable )
+            mes " Racket-Ball distance : "+ racket_ball_distance
+            mes " Reached-pos(+)       : "+ ( ball_pos.y + racket_ball_distance )
+            mes " Reached-pos(-)       : "+ ( ball_pos.y - racket_ball_distance )
         
 
         redraw 1
@@ -290,10 +314,16 @@
 
 *l_enemyai
 
+    // ラケットとボールのx座標の距離を測る
     racket_ball_distance = 640 - racketspace - racketthickness - int( ball_pos.x )
 
+    // ボールがあっち行ってるならサボる
+    if ( ( ball_vector == 2 ) or ( ball_vector == 3 ) ) : return 1
+
+    // ボールこっち来とるわ！
     if ( ball_vector == 1 ) {
 
+        // ボールの着弾地点 (ball_pos.y - racket_ball_distance) のところにラケットがなかったら、そこに向かって移動
         if ( ( ( ball_pos.y - racket_ball_distance ) <= enemy_pos + racket * 1/5 ) or ( ( ball_pos.y - racket_ball_distance ) >= enemy_pos + racket * 4/5 ) ) {
             
             if ( enemy_pos > 0 ) : enemy_pos -= movespeed
@@ -304,6 +334,7 @@
 
     if ( ball_vector == 4 ) {
 
+        // ボールの着弾地点 (ball_pos.y + racket_ball_distance) のところにラケットがなかったら、そこに向かって移動
         if ( ( ( ball_pos.y + racket_ball_distance ) != enemy_pos + racket * 1/5 ) and ( ( ball_pos.y + racket_ball_distance ) >= enemy_pos + racket * 4/5 ) ) {
             
             if ( enemy_pos <= 480 - racket ) : enemy_pos += movespeed
@@ -312,4 +343,4 @@
 
     }
 
-    return
+    return 0
