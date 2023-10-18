@@ -111,11 +111,10 @@
                 if ( isLockedScore == false ) { ; スコア変更がロックされていないか
                     
                     score += 100
+                    score += abs( abs( int( ball_pos.y ) - my_pos - racket / 2 ) - 50 ) ; ラケット中央に近い分だけスコア加算
                     isLockedScore = true
 
                 }
-
-                score += abs( abs( int( ball_pos.y ) - my_pos - racket / 2 ) - 50 ) ; ラケット中央に近い分だけスコア加算
 
                 // ボール跳ね返す
                 switch ball_vector
