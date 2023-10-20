@@ -21,6 +21,8 @@
 
     title "3年 電気電子科 文化祭Aグループ"
 
+    onexit gosub *exiting
+
 *start
 
     cls
@@ -418,6 +420,16 @@
     sendmsg hInput, $CC, '*'
 
     button goto "決定", *continue_game_pwcheck
+    button goto "キャンセル", *cancel
+
+    stop
+
+*cancel
+
+    gsel 1, -1								// ウィンドウを隠す
+    gsel 0, 1
+
+    onkey 1
 
     stop
 
@@ -472,3 +484,19 @@
     }
 
     return
+
+*exiting
+
+    if ( ginfo_act == 1 ) {
+        
+        gsel 1, -1								// ウィンドウを隠す
+        gsel 0, 1
+
+        onkey 1
+
+        return
+
+    }
+
+    end
+
