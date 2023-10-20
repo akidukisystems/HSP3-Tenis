@@ -15,11 +15,54 @@
 
     #define movespeed 2
 
+    screen 1, 320, 240, 2
+	title "認証"
+	gsel 0, 1
+
+    title "3年 電気電子科 文化祭Aグループ"
+
+*start
+
+    cls
+
+    uniqueID = ""+ strf( "%02d%02d%02d%02d%02d", gettime(1), gettime(3), gettime(4), gettime(5), gettime(6) )
+    name = ""
+
+    font msgothic, 20
+    mes "テニスゲーム"
+
+    font msgothic, 12
+    pos 260, 8
+	mes "Version 2.1"
+	mes "3年 電気電子科　文化祭Aグループ\n\n"
+
+    pos 0, ginfo_cy
+	objsize 256, 32
+	button goto "開始", *game
+
+	font msgothic, 16
+	mes "\n設定"
+	objsize 64, 24
+	pos 0, ginfo_cy : mes "プレイヤー名     : ", 1 : input name, 128, 24, 16
+	pos 0, ginfo_cy : mes "プレイヤーコード : "+ uniqueID +"", 1
+
+	pos 0, ginfo_cy +32
+	mes "操作方法"
+	mes "矢印キー（上下）で移動"
+    mes " ボールを打ち返してください\n 打ち返したところが ラケットの中心に近いほど、多くスコアをもらえます。\n"
+	mes "プレイ後、プレイヤー名とスコア、プレイヤーコードが、集計目的で記録されます。"
+
+    stop
+
+*game
+
+    cls
+
     my_pos = 0
     enemy_pos = 0
 
-    ball_pos.x = 200.0
-    ball_pos.y = 200.0
+    ball_pos.x = 400.0
+    ball_pos.y = 400.0
     ball_vector = 2
 
     ball_speed = 1.0
@@ -32,7 +75,7 @@
     nowkey = 0
 
     score = 0
-    name = "PLAYER"
+    if ( name == "" ) : name = "PLAYER"
 
     font "MS Gothic", 12
 
@@ -196,12 +239,22 @@
         if ( int( ball_pos.x ) <= ballsize ) {
 
             font "", 48
-            
             color : pos 192, 52
             mes "GAME OVER"
 
+            font "", 24 : pos 161, ginfo_cy -1
+            mes "Press [Esc] key to save your score"
+            mes "Press [F1] key to quit"
+
+            font "", 48
             color 192, 0, 0 : pos 190, 50
             mes "GAME OVER"
+
+            font "", 24 : pos 160, ginfo_cy
+            mes "Press [Esc] key to save your score"
+            mes "Press [F1] key to quit"
+
+            onkey *continue_game
 
             redraw 1
 
@@ -214,21 +267,22 @@
         if ( int( ball_pos.x ) >= 640 - ballsize ) {
 
             font "", 48
-                
             color : pos 192, 52
             mes "GAME OVER"
 
+            font "", 24 : pos 161, ginfo_cy -1
+            mes "Press [Esc] key to save your score"
+            mes "Press [F1] key to quit"
+
+            font "", 48
             color 192, 0, 0 : pos 190, 50
             mes "GAME OVER"
 
-            wait 300
+            font "", 24 : pos 160, ginfo_cy
+            mes "Press [Esc] key to save your score"
+            mes "Press [F1] key to quit"
 
-            color : pos 462, 52
-            mes "...?"
-
-            color 192, 0, 0 : pos 460, 50
-            mes "...?"
-
+            onkey *continue_game
 
             redraw 1
 
@@ -343,3 +397,78 @@
     }
 
     return 0
+
+
+
+
+*continue_game
+
+    key_val = wparam
+    if ( ( key_val != 27 ) and ( key_val != 112 ) ) : stop	// EscかF1の時以外は動かない
+
+    onkey 0
+
+    gsel 1, 1 : cls
+    mes "管理者用パスワードを入力してください"	// めっせじ
+
+    authtyping = ""
+    input authtyping, 320, 20, 0
+
+    hInput = objinfo(stat, 2)				// パスワード非表示
+    sendmsg hInput, $CC, '*'
+
+    button goto "決定", *continue_game_pwcheck
+
+    stop
+
+*continue_game_pwcheck
+
+    if ( authtyping != "denki" ) {			// パスワード指定　ハードコーディングだけど許せ
+
+        stop
+
+    }
+
+    gsel 1, -1								// ウィンドウを隠す
+    gsel 0, 1
+
+    if ( key_val == 27 ) {					// セーブデータを作る
+
+        savedata = ""
+        notesel savedata
+        noteload "list.txt"
+        noteadd ""+ uniqueID +","+ name +","+ score, -1, 0
+        notesave "list.txt"
+
+        goto *start
+
+    }
+
+    if ( key_val == 112 ) : goto *start
+
+    onkey 1
+    stop
+
+*keycheck
+
+    if ( wparam == 112 ) {
+
+        if ( debug ) {
+
+            debug = 0
+
+        } else {
+
+            debug = 1
+
+        }
+
+    }
+
+    if ( wparam == 32 ) {
+
+        baria = 1
+
+    }
+
+    return
