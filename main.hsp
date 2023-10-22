@@ -21,6 +21,10 @@
 
     title "3年 電気電子科 文化祭Aグループ"
 
+    debug_mode = false
+
+    if ( dir_cmdline == "enableDebug" ) : debug_mode = true
+
     onexit gosub *exiting
 
 *start
@@ -342,21 +346,25 @@
 
             circle int( ball_pos.x ) -ballsize, int( ball_pos.y ) -ballsize, int( ball_pos.x ) +ballsize, int( ball_pos.y ) +ballsize
 
-            color
-            pos 0, 270
-            mes " name  : "+ name
-            mes " score : "+ score
-            mes "General"
-            mes " Ball Vector      : "+ ball_vector
-            mes " My racket-pos    : "+ my_pos
-            mes " Enemy racket-pos : "+ enemy_pos
-            mes " isLockedScore    : "+ typebool( isLockedScore )
-            mes " ball-speed       : "+ ball_speed
-            mes "AI"
-            mes " isEnable             : "+ typebool( isAiEnable )
-            mes " Racket-Ball distance : "+ racket_ball_distance
-            mes " Reached-pos(+)       : "+ ( ball_pos.y + racket_ball_distance )
-            mes " Reached-pos(-)       : "+ ( ball_pos.y - racket_ball_distance )
+            if ( debug_mode ) {
+
+                color
+                pos 0, 270
+                mes " name  : "+ name
+                mes " score : "+ score
+                mes "General"
+                mes " Ball Vector      : "+ ball_vector
+                mes " My racket-pos    : "+ my_pos
+                mes " Enemy racket-pos : "+ enemy_pos
+                mes " isLockedScore    : "+ typebool( isLockedScore )
+                mes " ball-speed       : "+ ball_speed
+                mes "AI"
+                mes " isEnable             : "+ typebool( isAiEnable )
+                mes " Racket-Ball distance : "+ racket_ball_distance
+                mes " Reached-pos(+)       : "+ ( ball_pos.y + racket_ball_distance )
+                mes " Reached-pos(-)       : "+ ( ball_pos.y - racket_ball_distance )
+
+            }
         
 
         redraw 1
