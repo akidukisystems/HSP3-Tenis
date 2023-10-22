@@ -35,7 +35,7 @@
 
     font msgothic, 12
     pos 260, 8
-	mes "Version 2.1"
+	mes "Version 1.0"
 	mes "3年 電気電子科　文化祭Aグループ\n\n"
 
     pos 0, ginfo_cy
