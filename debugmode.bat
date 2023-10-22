@@ -1,0 +1,1 @@
+hsptmp.exe enableDebug
