@@ -364,6 +364,11 @@
                 mes " Reached-pos(+)       : "+ ( ball_pos.y + racket_ball_distance )
                 mes " Reached-pos(-)       : "+ ( ball_pos.y - racket_ball_distance )
 
+            } else {
+
+                color : pos 100, 10
+                mes "NAME : "+ name +", SCORE : "+ score
+
             }
         
 
