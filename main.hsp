@@ -248,17 +248,9 @@
             color : pos 192, 52
             mes "GAME OVER"
 
-            font "", 24 : pos 161, ginfo_cy -1
-            mes "Press [Esc] key to save your score"
-            mes "Press [F1] key to quit"
-
             font "", 48
             color 192, 0, 0 : pos 190, 50
             mes "GAME OVER"
-
-            font "", 24 : pos 160, ginfo_cy
-            mes "Press [Esc] key to save your score"
-            mes "Press [F1] key to quit"
 
             onkey *continue_game
 
@@ -276,17 +268,9 @@
             color : pos 192, 52
             mes "GAME OVER"
 
-            font "", 24 : pos 161, ginfo_cy -1
-            mes "Press [Esc] key to save your score"
-            mes "Press [F1] key to quit"
-
             font "", 48
             color 192, 0, 0 : pos 190, 50
             mes "GAME OVER"
-
-            font "", 24 : pos 160, ginfo_cy
-            mes "Press [Esc] key to save your score"
-            mes "Press [F1] key to quit"
 
             onkey *continue_game
 
