@@ -77,6 +77,7 @@
     isAiEnable = false
 
     isLockedScore = false
+    isLockedVector = false
 
     nowkey = 0
 
@@ -159,40 +160,46 @@
 
                 if ( isLockedScore == false ) { ; スコア変更がロックされていないか
                     
-                    score += 100
-                    score += abs( abs( int( ball_pos.y ) - my_pos - racket / 2 ) - 50 ) ; ラケット中央に近い分だけスコア加算
+                    score += 20
+                    score += abs( abs( int( ball_pos.y ) - my_pos - racket / 2 ) - 50 ) / 8 ; ラケット中央に近い分だけスコア加算
                     isLockedScore = true
 
                 }
 
-                // ボール跳ね返す
-                switch ball_vector
+                if ( isLockedVector == false ) {
 
-                    case 1
+                    isLockedVector = true
 
-                        ball_vector = 2
+                    // ボール跳ね返す
+                    switch ball_vector
 
-                    swbreak
+                        case 1
 
-                    case 2
+                            ball_vector = 2
 
-                        ball_vector = 1
+                        swbreak
 
-                    swbreak
+                        case 2
 
-                    case 3
+                            ball_vector = 1
 
-                        ball_vector = 4
+                        swbreak
 
-                    swbreak
+                        case 3
 
-                    case 4
+                            ball_vector = 4
 
-                        ball_vector = 3
+                        swbreak
 
-                    swbreak
-                
-                swend
+                        case 4
+
+                            ball_vector = 3
+
+                        swbreak
+                    
+                    swend
+
+                }
 
             }
 
@@ -206,6 +213,7 @@
 
                 ball_speed += ball_acceleration     ; ボール加速
                 isLockedScore = false               ; スコアロック解除
+                isLockedVector = false
 
                 // ボール跳ね返す
                 switch ball_vector
@@ -248,9 +256,17 @@
             color : pos 192, 52
             mes "GAME OVER"
 
+            font "", 24 : pos 191, ginfo_cy -1
+            mes "F1キー: 終了"
+            mes "スコア: "+ score
+
             font "", 48
             color 192, 0, 0 : pos 190, 50
             mes "GAME OVER"
+
+            font "", 24 : pos 191, ginfo_cy -1
+            mes "F1キー: 終了"
+            mes "スコア: "+ score
 
             onkey *continue_game
 
@@ -268,9 +284,17 @@
             color : pos 192, 52
             mes "GAME OVER"
 
+            font "", 24 : pos 191, ginfo_cy -1
+            mes "F1キー: 終了"
+            mes "スコア: "+ score
+
             font "", 48
             color 192, 0, 0 : pos 190, 50
             mes "GAME OVER"
+
+            font "", 24 : pos 191, ginfo_cy -1
+            mes "F1キー: 終了"
+            mes "スコア: "+ score
 
             onkey *continue_game
 
@@ -283,6 +307,8 @@
         // 上下壁判定
 
         if ( ( int( ball_pos.y ) - ballsize <= 0 ) or ( int( ball_pos.y ) + ballsize > 480 ) ) {
+
+            isLockedVector = false
 
             ; 跳ね返す
             switch ball_vector
@@ -341,6 +367,7 @@
                 mes " My racket-pos    : "+ my_pos
                 mes " Enemy racket-pos : "+ enemy_pos
                 mes " isLockedScore    : "+ typebool( isLockedScore )
+                mes " isLockedVector   : "
                 mes " ball-speed       : "+ ball_speed
                 mes "AI"
                 mes " isEnable             : "+ typebool( isAiEnable )
